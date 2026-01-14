@@ -1,240 +1,74 @@
-# Leave Application System
+# Simple Online Item Management System
 
-A web-based leave management system built with Python Flask, HTML/CSS/JavaScript, and MySQL database. This project is designed for deployment on AWS EC2 and supports future scaling phases.
+A very simple, beginner-friendly PHP web application for a Cloud Computing course. It performs basic CRUD (Create, Read, Update, Delete) operations on an `items` database.
 
-## Project Structure
+## 📋 Project Requirements & Tech Stack
+- **Languages:** PHP (Native, no frameworks), HTML, CSS.
+- **Database:** MySQL.
+- **Server:** Apache (Linux/Windows).
+- **Goal:** Minimalist design, easy to deploy on AWS EC2.
 
+## 📂 Project Structure
 ```
-TCC-Proj/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── database.sql           # MySQL database setup script
-├── templates/             # HTML templates
-│   ├── index.html
-│   ├── login.html
-│   ├── register.html
-│   ├── dashboard.html
-│   ├── apply_leave.html
-│   └── edit_leave.html
-└── static/                # Static files
-    ├── css/
-    │   └── style.css
-    └── js/
-        └── script.js
-```
-
-## Features
-
-- User registration and login
-- Apply for leave
-- View leave applications
-- Edit leave applications
-- Delete leave applications
-- Responsive UI
-
-## Prerequisites
-
-- Python 3.8+
-- MySQL Server (via XAMPP)
-- phpMyAdmin (for database management)
-
-## Local Setup Instructions
-
-### 1. Install Python Dependencies
-
-```bash
-pip install -r requirements.txt
+/project-root
+├── index.php        // Homepage, view all items
+├── add.php          // Form to add a new item
+├── edit.php         // Form to edit an existing item
+├── delete.php       // Logic to delete an item
+├── db.php           // Database connection configuration
+├── header.php       // HTML header template
+├── footer.php       // HTML footer template
+├── database.sql     // SQL script to set up the DB
+└── css/
+    └── style.css    // Minimal CSS styling
 ```
 
-### 2. Setup MySQL Database
+## 🚀 How to Run Locally (XAMPP on Windows)
 
-1. Start XAMPP and ensure MySQL and Apache are running.
-2. Open phpMyAdmin (usually at http://localhost/phpmyadmin).
-3. Create a new database named `leave_system`.
-4. Import the `database.sql` file:
-   - Go to the "Import" tab in phpMyAdmin.
-   - Select the `database.sql` file from your project directory.
-   - Click "Go" to execute the SQL script.
+1.  **Install XAMPP**: Download and install XAMPP.
+2.  **Start Services**: Open XAMPP Control Panel and start **Apache** and **MySQL**.
+3.  **Setup Database**:
+    *   Open your browser and go to `http://localhost/phpmyadmin`.
+    *   Click usually on specific "Import" tab (or create DB manually).
+    *   You can create a DB named `tcc_db` manually or just import the provided script.
+    *   Ideally: Go to "Import", choose `database.sql` from this project folder, and click "Import". This creates the database `tcc_db` and the `items` table.
+4.  **Deploy Code**:
+    *   Copy the entire project folder to `C:\xampp\htdocs\`.
+    *   Rename the folder if you want (e.g., `tcc-proj`).
+    *   Final path should look like: `C:\xampp\htdocs\tcc-proj\index.php`.
+5.  **Check Configuration**:
+    *   Open `db.php`.
+    *   Ensure `$user` is `'root'` and `$pass` is `''` (empty), which is the XAMPP default.
+6.  **Run**:
+    *   Visit `http://localhost/tcc-proj/index.php` in your browser.
 
-Alternatively, you can run the SQL script using MySQL command line:
+## 🐧 How to Run on Linux (AWS EC2 / Ubuntu)
 
-```bash
-mysql -u root -p < database.sql
-```
+1.  **Update System**: `sudo apt update && sudo apt upgrade -y`
+2.  **Install Web Server & PHP**:
+    ```bash
+    sudo apt install apache2 php libapache2-mod-php php-mysqli -y
+    ```
+3.  **Install MySQL (if running DB locally on EC2)**:
+    ```bash
+    sudo apt install mysql-server -y
+    ```
+    *(If using AWS RDS, skip installing mysql-server locally and just install `mysql-client` to connect).*
+4.  **Setup Database**:
+    *   Log in to MySQL: `sudo mysql` or `mysql -u root -p`.
+    *   Run the SQL commands from `database.sql`.
+    *   Create a user for the web app if needed.
+5.  **Deploy Code**:
+    *   Place files in `/var/www/html/`.
+    *   Remove default index: `sudo rm /var/www/html/index.html`.
+    *   Copy your PHP files there.
+6.  **Configure DB Connection**:
+    *   Edit `db.php`: `sudo nano /var/www/html/db.php`.
+    *   Update `$host`, `$user`, `$pass`, `$dbname` to match your RDS endpoint or local MySQL credentials.
+7.  **Restart Apache**: `sudo systemctl restart apache2`.
+8.  **Access**: Visit `http://<your-ec2-public-ip>/`.
 
-### 3. Configure Database Connection
-
-In `app.py`, update the `db_config` dictionary if your MySQL credentials differ:
-
-```python
-db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'your_mysql_password',  # Update if you have a password
-    'database': 'leave_system'
-}
-```
-
-### 4. Run the Flask Application
-
-```bash
-python app.py
-```
-
-The application will run on `http://localhost:5000`.
-
-### 5. Access the Application
-
-- Open your browser and go to `http://localhost:5000`
-- Register a new account or login with existing credentials
-- For example users, first generate password hashes:
-  ```bash
-  pip install werkzeug
-  python -c "from werkzeug.security import generate_password_hash; print('Admin:', generate_password_hash('admin123'))"
-  python -c "from werkzeug.security import generate_password_hash; print('John:', generate_password_hash('password'))"
-  python -c "from werkzeug.security import generate_password_hash; print('Jane:', generate_password_hash('password'))"
-  ```
-- Update the `database.sql` INSERT statements with the actual hashes
-- Example login: admin@example.com / admin123
-
-## AWS EC2 Deployment Preparation
-
-### 1. Launch EC2 Instance
-
-- Choose Amazon Linux 2 or Ubuntu AMI
-- Configure security group to allow HTTP (port 80) and SSH (port 22)
-
-### 2. Install Dependencies on EC2
-
-```bash
-# Update system
-sudo yum update -y  # For Amazon Linux
-# or
-sudo apt update && sudo apt upgrade -y  # For Ubuntu
-
-# Install Python
-sudo yum install python3 python3-pip -y
-# or
-sudo apt install python3 python3-pip -y
-
-# Install MySQL
-sudo yum install mysql-server -y
-sudo systemctl start mysqld
-sudo systemctl enable mysqld
-# Secure MySQL installation
-sudo mysql_secure_installation
-```
-
-### 3. Setup Database on EC2
-
-- Follow steps 2-3 from local setup, but connect to EC2 MySQL instance
-- Update `db_config` in `app.py` with EC2 database credentials
-
-### 4. Deploy Flask App
-
-```bash
-# Clone your repository
-git clone https://github.com/yourusername/TCC-Proj.git
-cd TCC-Proj
-
-# Install dependencies
-pip3 install -r requirements.txt
-
-# Run the app (for testing)
-python3 app.py
-
-# For production, use Gunicorn or similar
-pip3 install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 app:app
-```
-
-### 5. Configure Web Server (Nginx)
-
-```bash
-# Install Nginx
-sudo yum install nginx -y
-sudo systemctl start nginx
-sudo systemctl enable nginx
-
-# Configure Nginx (create /etc/nginx/conf.d/flask_app.conf)
-server {
-    listen 80;
-    server_name your-ec2-public-ip;
-
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-### 6. Domain and SSL (Optional)
-
-- Point your domain to EC2 instance
-- Use Let's Encrypt for SSL certificate
-
-## Database Schema
-
-### Users Table
-- id (INT, Primary Key)
-- name (VARCHAR)
-- email (VARCHAR, Unique)
-- password (VARCHAR, Hashed)
-- role (ENUM: employee, manager)
-
-### Leaves Table
-- id (INT, Primary Key)
-- user_id (INT, Foreign Key)
-- start_date (DATE)
-- end_date (DATE)
-- reason (TEXT)
-- status (ENUM: pending, approved, rejected)
-
-## API Endpoints
-
-- `/` - Homepage
-- `/login` - User login
-- `/register` - User registration
-- `/dashboard` - User dashboard
-- `/apply` - Apply for leave
-- `/edit/<id>` - Edit leave application
-- `/delete/<id>` - Delete leave application
-- `/logout` - User logout
-
-## Security Notes
-
-- Passwords are hashed using Werkzeug security
-- User sessions are managed by Flask
-- Input validation is performed on both client and server side
-- SQL injection is prevented using parameterized queries
-
-## Future Enhancements
-
-- Role-based access control (managers approve leaves)
-- Email notifications
-- Calendar view
-- Leave balance tracking
-- Admin panel
-- API endpoints for mobile app
-- Containerization with Docker
-- Load balancing for scaling
-
-## Troubleshooting
-
-1. **Database connection error**: Ensure MySQL is running and credentials are correct.
-2. **ImportError**: Make sure all dependencies are installed.
-3. **Port already in use**: Change the port in `app.run(port=5001)`.
-4. **Static files not loading**: Check Flask static folder configuration.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-
-This project is for educational purposes.
+## ☁️ AWS Deployment Notes
+*   **Database**: For production on AWS, uses **Amazon RDS** (MySQL) instead of a local database on the EC2 instance.
+*   **Scalability**: The application is stateless (no local file storage for user data), making it compatible with **Auto Scaling Groups** and **Elastic Load Balancers (ELB)**.
+*   **Security**: Ensure your Security Groups allow traffic on Port 80 (HTTP) for the web server and Port 3306 (MySQL) between the EC2 and RDS.
