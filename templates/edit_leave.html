@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Leave - Leave Application System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Edit Leave Application</h1>
+        <nav>
+            <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+            <form method="POST" action="{{ url_for('edit', id=leave.id) }}">
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date" name="start_date" value="{{ leave.start_date }}" required>
+                
+                <label for="end_date">End Date:</label>
+                <input type="date" id="end_date" name="end_date" value="{{ leave.end_date }}" required>
+                
+                <label for="reason">Reason:</label>
+                <textarea id="reason" name="reason" required>{{ leave.reason }}</textarea>
+                
+                <button type="submit" class="btn">Update Application</button>
+            </form>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2023 Leave Application System</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
