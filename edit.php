@@ -1,28 +1,40 @@
 <?php
 // edit.php - Edit an existing item (Update)
-require_once 'db.php';
-include 'header.php';
+require_once __DIR__ . '/db.php';
+include __DIR__ . '/header.php';
 
 // Get ID from URL
 $id = $_GET['id'] ?? '';
 if ($id === '' || !ctype_digit($id)) {
     echo '<section><div class="alert">Invalid item ID. <a href="index.php">Go Back</a></div></section>';
-    include 'footer.php';
+    include __DIR__ . '/footer.php';
     exit;
 }
 
 $errors = [];
-// Fetch existing item data to pre-fill the form
-$stmt = $mysqli->prepare("SELECT id, name, description, price FROM items WHERE id = ?");
-$stmt->bind_param('i', $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$item = $result->fetch_assoc();
-$stmt->close();
+$item = null;
+
+if (isset($mysqli) && !$mysqli->connect_errno) {
+    // Fetch existing item data to pre-fill the form
+    $stmt = $mysqli->prepare("SELECT id, name, description, price FROM items WHERE id = ?");
+    if ($stmt) {
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $item = $result->fetch_assoc();
+        $stmt->close();
+    } else {
+        echo '<section><div class="alert">Database error: ' . htmlspecialchars($mysqli->error) . '</div></section>';
+    }
+} else {
+     echo '<section><div class="alert">Database connection failed.</div></section>';
+     include __DIR__ . '/footer.php';
+     exit;
+}
 
 if (!$item) {
     echo '<section><div class="alert">Item not found. <a href="index.php">Go Back</a></div></section>';
-    include 'footer.php';
+    include __DIR__ . '/footer.php';
     exit;
 }
 
@@ -95,4 +107,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </form>
 </section>
-<?php include 'footer.php'; ?>
+<?php include __DIR__ . '/footer.php'; ?>

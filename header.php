@@ -1,5 +1,6 @@
 <?php
 // header.php - Simple page header and layout start
+// Determine base path for links if needed, but relative paths usually work best
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -7,6 +8,7 @@
   <meta charset="UTF-8">
   <title>Simple Online Item Management</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Use relative path for CSS so it works in /TCC-Proj/ or root -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

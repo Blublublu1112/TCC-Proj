@@ -1,8 +1,8 @@
 <?php
 // add.php - Add a new item (Create)
 // Shows a form and handles submission via POST.
-require_once 'db.php';
-include 'header.php';
+require_once __DIR__ . '/db.php';
+include __DIR__ . '/header.php';
 
 // Handle form submit
 $errors = [];
@@ -21,19 +21,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Insert if no errors
     if (!$errors) {
-        $stmt = $mysqli->prepare("INSERT INTO items (name, description, price) VALUES (?, ?, ?)");
-        if (!$stmt) {
-            $errors[] = 'Database error (prepare): ' . $mysqli->error;
+        // Check connection
+        if (!isset($mysqli) || $mysqli->connect_errno) {
+             $errors[] = "Database connection error. " . ($db_error ?? '');
         } else {
-            $stmt->bind_param('ssd', $name, $description, $price);
-            if ($stmt->execute()) {
-                // Success: redirect to home
-                header('Location: index.php');
-                exit;
+            $stmt = $mysqli->prepare("INSERT INTO items (name, description, price) VALUES (?, ?, ?)");
+            if (!$stmt) {
+                $errors[] = 'Database error (prepare): ' . $mysqli->error;
             } else {
-                $errors[] = 'Database error (insert): ' . $stmt->error;
+                $stmt->bind_param('ssd', $name, $description, $price);
+                if ($stmt->execute()) {
+                    // Success: redirect to home
+                    header('Location: index.php');
+                    exit;
+                } else {
+                    $errors[] = 'Database error (insert): ' . $stmt->error;
+                }
+                $stmt->close();
             }
-            $stmt->close();
         }
     }
 }
@@ -75,4 +80,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </form>
   
 </section>
-<?php include 'footer.php'; ?>
+<?php include __DIR__ . '/footer.php'; ?>
